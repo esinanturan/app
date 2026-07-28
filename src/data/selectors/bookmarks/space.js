@@ -15,11 +15,6 @@ export const status = ({bookmarks}, spaceId)=>
 
 export const makeStatus = () => status
 
-export const makeBookmarksLastChange = () => createSelector(
-	[({bookmarks={}})=>bookmarks.elements],
-	()=>new Date().getTime()
-)
-
 export const count = ({bookmarks}, spaceId)=>
 	bookmarks.spaces[spaceId] ? bookmarks.spaces[spaceId].count : blankSpace.count
 

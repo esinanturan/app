@@ -49,7 +49,8 @@ class BookmarksHeaderSelectModeCheckbox extends React.Component {
                             ref={this._allCheckbox}
                             type='checkbox'
                             title={t.s('selectAll')}
-                            checked={selectMode.all} />
+                            checked={!!selectMode.all}
+                            readOnly />
                     </label>
                 </Button>
             </FirstAction>

@@ -1,6 +1,6 @@
 {
 	"name": "app",
-	"version": "5.7.8",
+	"version": "5.7.9",
 	"description": "All-in-one bookmark manager",
 	"author": "Rustem Mussabekov",
 	"license": "MIT",
@@ -59,7 +59,7 @@
 		"redux": "^4.0.0",
 		"redux-persist": "^6.0.0",
 		"redux-saga": "^1.1.0",
-		"reselect": "^4.0.0",
+		"reselect": "^5.0.0",
 		"seamless-immutable": "^7.0.0"
 	},
 	"devDependencies": {

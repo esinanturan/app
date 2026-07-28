@@ -46,7 +46,7 @@ class TagsMenu extends React.PureComponent {
             this.props.load(this.props.spaceId)
     }
 
-    keyExtractor = ({_id})=>_id
+    keyExtractor = ({type, _id})=>(type||'tag')+':'+_id
 
     render() {
         const {

@@ -58,7 +58,10 @@ export const makeTagsAutocomplete = ()=>createSelector(
 
 		//filter
 		if (filter)
-			return filterByQuery(filterSelected([..._collection,..._other], selected), filter)
+			return filterSelected(
+				filterByQuery(filterSelected([..._collection,..._other], selected), filter),
+				selected
+			)
 
 		//tags
 		let recent 		= filterSelected(_recent, selected)
