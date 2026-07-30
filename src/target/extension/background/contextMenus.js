@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill'
+import config from '~config'
 import { open } from './popup'
 import { addCurrentTabSelection } from './highlights'
 import { environment } from '../environment'
@@ -24,7 +25,10 @@ async function onClicked({ menuItemId, pageUrl, srcUrl, linkUrl }, { windowId })
             return open('/extension/tabs/-1')
 
         case 'open_app':
-            return open('/', { width: 1280, height: 800 })
+            return browser.tabs.create({
+                url: config.links.app.index,
+                active: true
+            })
 
         case 'settings':
             return open('/settings', { width: 800, height: 700 })

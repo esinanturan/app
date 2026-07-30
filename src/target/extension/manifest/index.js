@@ -89,7 +89,8 @@ module.exports = ({ vendor, production=false }, l) => {
 			'scripting',
 			'storage',
 			...(vendor == 'chrome' || vendor == 'edge' ? ['sidePanel'] : []),
-			...(vendor == 'safari-ios' ? ['tabs'] : [])
+			...(vendor == 'safari-ios' ? ['tabs'] : []),
+			...(vendor == 'safari' ? ['nativeMessaging'] : [])
 		],
 		
 		optional_permissions: [

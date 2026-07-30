@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill'
+import { getSafariProfileId } from './safari-profile'
 
 export async function open(path, { width = 420, height = 600 } = {}) {
     let origin = { left: 0, top: 0, width: 0, height: 0 }
@@ -6,8 +7,11 @@ export async function open(path, { width = 420, height = 600 } = {}) {
         origin = await browser.windows.getCurrent()
     } catch(_) {}
 
+    //non-default safari profile: the web app instead of the local page (due to cookie issues)
+    const base = await getSafariProfileId() ? 'https://app.raindrop.io' : '/index.html#'
+
     return await browser.windows.create({
-        url: `/index.html#${path}`,
+        url: `${base}${path}`,
         type: 'popup',
 
         //position
