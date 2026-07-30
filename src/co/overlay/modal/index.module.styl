@@ -95,6 +95,6 @@ html:global(.extension)[data-modal-stretch='true'][data-modal-showing='true'] [d
         border-radius: 0
         width: 100%
         height: 100%
-        animation: none
+        animation-duration: 0s /* instead of animation: none - otherwise buggy in safari extension popover */
     }
 }

@@ -5,6 +5,7 @@
     min-height: var(--button-height)
     padding: 0 var(--padding-small)
     padding-right: var(--padding-mini)
+    cursor: text
     transition: box-shadow 0.1s ease-in-out, background 0.1s ease-in-out
 
     &[data-disabled="true"] {
@@ -32,18 +33,19 @@
         color: var(--disable-text-color)
     }
 
-    &[data-min-rows] {
-        min-height: calc( var(--primary-font-size) * var(--primary-line-height) * var(--min-rows) + (var(--padding-small) * 2) )
-    }
-
-    &[data-max-rows] {
-        max-height: calc( var(--primary-font-size) * var(--primary-line-height) * var(--max-rows) )
-    }
-
-    &[data-max-rows='1'] {
+    &[data-single-row] {
         mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 20%)
         -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 15%)
     }
+}
+
+textarea.text {
+    field-sizing: content
+    scrollbar-gutter: stable
+
+    /* unset var → invalid at computed-value time → auto/none, i.e. no clamp */
+    min-height: calc( 1lh * var(--min-rows) + (var(--padding-small) * 2) )
+    max-height: calc( 1lh * var(--max-rows) )
 }
 
 .icon {
@@ -71,7 +73,7 @@
     border-radius: var(--border-radius)
 
     &[data-multiline], &[data-auto-size] {
-        .text:not([data-max-rows='1']) {
+        .text:not([data-single-row]) {
             padding-top: var(--padding-small)
             padding-bottom: var(--padding-small)
         }

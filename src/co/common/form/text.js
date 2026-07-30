@@ -1,40 +1,46 @@
 import s from './text.module.styl'
-import React from 'react'
-import TextareaAutosize from 'react-textarea-autosize'
+import React, { useRef, useCallback, useLayoutEffect } from 'react'
 
-const emptyObj = {}
-const getRowsProps = (min, max)=>({
-    async: false,
-    ...(min ? {
-        'data-min-rows': min,
-    } : {}),
-    ...(max ? {
-        'data-max-rows': max,
-    } : {}),
-    style: {
-        ...(min ? {'--min-rows': min}:{}),
-        ...(max ? {'--max-rows': max}:{})
-    }
-})
+const nativeFieldSizing = typeof window != 'undefined' && window.CSS?.supports('field-sizing', 'content')
 
-class TextInner extends React.Component {
-    static defaultProps = {
-        className: '',
-        autoSize: undefined,
-        multiline: undefined,
-        selectAll: undefined,
-        variant: 'default',     //less, inline
-        font: 'default',        //title
+export const Text = React.forwardRef(function Text({
+    className='',
+    autoSize,
+    multiline,
+    selectAll,
+    variant='default',      //less, inline
+    font='default',         //title
+    hidden,
+    minRows,
+    maxRows,
+    icon=null,              //before input
+    children=null,          //after input
+    readOnly,
+    onKeyDown,
+    onFocus,
+    ...etc
+}, ref) {
+    const firstFocus = useRef(false)
 
-        children: null,         //after input
-        icon: null
-    }
+    const field = useRef(null)
+    const setRef = useCallback(node => {
+        field.current = node
+        if (typeof ref == 'function') ref(node)
+        else if (ref) ref.current = node
+    }, [ref])
 
-    onKeyDownField = (e)=>{
-        if (e.keyCode == 13 && 
-            this.props.autoSize &&
+    //field-sizing: content polyfill, all usages are controlled so a render is enough
+    useLayoutEffect(() => {
+        if (nativeFieldSizing || !autoSize || !field.current) return
+        field.current.style.height = 'auto'
+        field.current.style.height = field.current.scrollHeight + 'px'
+    })
+
+    const onKeyDownField = useCallback(e=>{
+        if (e.keyCode == 13 &&
+            autoSize &&
             (
-                !this.props.multiline ||
+                !multiline ||
                 e.metaKey || e.ctrlKey || e.shiftKey
             )){
             e.preventDefault()
@@ -43,66 +49,51 @@ class TextInner extends React.Component {
             if (form) form.requestSubmit()
         }
 
-        this.props.onKeyDown && this.props.onKeyDown(e)
-    }
+        onKeyDown && onKeyDown(e)
+    }, [autoSize, multiline, onKeyDown])
 
-    onFocus = (e)=>{
-        const { onFocus, readOnly=false } = this.props
-
+    const onFocusField = useCallback(e=>{
         if (readOnly)
             e.currentTarget.select()
 
-        if (!this._firstFocus && e.currentTarget.value){
-            this._firstFocus = true
+        if (!firstFocus.current && e.currentTarget.value){
+            firstFocus.current = true
 
-            if (this.props.selectAll)
+            if (selectAll)
                 e.currentTarget.select()
             else if (e.currentTarget.setSelectionRange && e.currentTarget.type!='email')
                 e.currentTarget.setSelectionRange(e.currentTarget.value.length, -1)
         }
 
         onFocus && onFocus(e)
-    }
+    }, [readOnly, selectAll, onFocus])
 
-    onContainerClick = (e)=>
-        e.currentTarget.querySelector(`.${s.text}`).focus()
+    const Component = autoSize ? 'textarea' : 'input'
 
-    render() {
-        const { className='', autoSize, variant, font, multiline, selectAll, hidden, icon, children, forwardedRef, minRows, maxRows, ...etc } = this.props
-        const Component = autoSize ? TextareaAutosize : 'input'
+    return (
+        <label
+            className={s.wrap+' '+className}
+            data-variant={variant}
+            data-auto-size={autoSize}
+            data-multiline={multiline}
+            data-font={font}
+            data-disabled={etc.disabled}
+            data-readonly={readOnly || undefined}
+            hidden={hidden}>
+            {icon ? <div className={s.icon}>{icon}</div> : null}
 
-        return (
-            <div 
-                className={s.wrap+' '+className}
-                data-variant={variant}
-                data-auto-size={autoSize}
-                data-multiline={multiline}
-                data-select-all={selectAll}
-                data-font={font}
-                data-disabled={etc.disabled}
-                data-readonly={etc.readOnly}
-                hidden={hidden}
-                onClick={this.onContainerClick}>
-                {icon ? <div className={s.icon}>{icon}</div> : null}
+            <Component
+                {...(autoSize ? { rows: 1 } : { type: 'text' })}
+                {...etc}
+                ref={setRef}
+                readOnly={readOnly}
+                className={s.text}
+                data-single-row={maxRows == 1 || undefined}
+                style={(minRows || maxRows) ? {'--min-rows': minRows, '--max-rows': maxRows} : etc.style}
+                onKeyDown={onKeyDownField}
+                onFocus={onFocusField} />
 
-                <Component 
-                    type='text'
-                    tabIndex='0'
-                    {...etc}
-                    ref={forwardedRef}
-                    className={s.text}
-
-                    {...((minRows || maxRows) ? getRowsProps(minRows, maxRows) : emptyObj)} //react-autosize-textarea built-in maxRows buggy, content jumping
-
-                    onKeyDown={this.onKeyDownField}
-                    onFocus={this.onFocus} />
-
-                {children}
-            </div>
-        )
-    }
-}
-
-export const Text = React.forwardRef((props, ref) => {
-    return <TextInner {...props} forwardedRef={ref} />
+            {children}
+        </label>
+    )
 })

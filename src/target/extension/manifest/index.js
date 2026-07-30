@@ -57,12 +57,7 @@ module.exports = ({ vendor, production=false }, l) => {
 		),
 
 		action: {
-			default_popup: vendor=='safari' ? 
-				[
-					file(l, '../../../assets/target/extension/action_in_iframe.html'),
-					file(l, '../../../assets/target/extension/action_in_iframe.js'),
-				][0] : 
-				'index.html?action',
+			default_popup: 'index.html?action',
 			
 			default_icon: vendor == 'firefox' ?
 				//firefox
