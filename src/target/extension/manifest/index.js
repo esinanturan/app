@@ -90,7 +90,7 @@ module.exports = ({ vendor, production=false }, l) => {
 			'storage',
 			...(vendor == 'chrome' || vendor == 'edge' ? ['sidePanel'] : []),
 			...(vendor == 'safari-ios' ? ['tabs'] : []),
-			...(vendor == 'safari' ? ['nativeMessaging'] : [])
+			...(vendor == 'safari' ? ['nativeMessaging', 'cookies', 'declarativeNetRequestWithHostAccess'] : [])
 		],
 		
 		optional_permissions: [
@@ -99,7 +99,10 @@ module.exports = ({ vendor, production=false }, l) => {
 
 		host_permissions: [
 			...(!production ? ['http://localhost:3000/*'] : []),
-			...(vendor == 'firefox' ? ['*://api.raindrop.io/*'] : [])
+			...(vendor == 'firefox' ? ['*://api.raindrop.io/*'] : []),
+			//both hosts: parent-domain cookies (.raindrop.io) are invisible under
+			//an api-only grant, and the DNR rule needs access to the api host it modifies
+			...(vendor == 'safari' ? ['*://raindrop.io/*', '*://api.raindrop.io/*'] : []),
 		],
 
 		optional_host_permissions: [

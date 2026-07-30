@@ -4,10 +4,9 @@ import contextMenus from './contextMenus'
 import links from './links'
 import omnibox from './omnibox'
 import runtime from './runtime'
-import storage from './storage'
 import highlights from './highlights'
 import popup from './popup'
-import fixSafariPermissions from './fix-safari-permissions'
+import fixSafariProfileCookies from './fix-safari-profile-cookies'
 
 action()
 commands()
@@ -15,7 +14,8 @@ contextMenus()
 omnibox()
 links()
 runtime()
-storage()
 highlights()
 popup()
-fixSafariPermissions()
+//fix-safari-permissions retired: its permissions.remove(origins: *://*/*) wiped
+//the host grants fix-safari-profile-cookies depends on
+fixSafariProfileCookies()
