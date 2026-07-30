@@ -24,3 +24,13 @@ Be sure to run `npm i` before calling any commands below
 - Safari >= 11 (OS X 10.11) - older version not support JS Rest in objects
 - Firefox >= 55 - older version not support JS Rest in objects
 - Edge >= 80 - earlies Blink version
+
+## Reset Safari extension state (dev purpose onl)
+Danger removes all safari settings!!!
+
+```sh
+rm -rf ~/Library/Containers/com.apple.Safari/Data/Library/Safari/*
+rm -rf ~/Library/Containers/com.apple.Safari/Data/Library/WebKit/*
+rm -rf ~/Library/Developer/Xcode/DerivedData/Save_to_Raindrop.io-*(N)
+defaults delete com.apple.Safari 2>/dev/null
+```
