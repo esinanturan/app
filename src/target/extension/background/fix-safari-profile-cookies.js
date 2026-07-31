@@ -26,7 +26,7 @@ const APEX = hostname.split('.').slice(-2).join('.')
 const ORIGINS = { origins: [`*://${APEX}/*`, `*://${hostname}/*`] }
 
 async function getSafariProfileId() {
-    if (!environment.includes('safari') || environment.includes('safari-ios'))
+    if (!environment.includes('safari'))
         return null
 
     try {

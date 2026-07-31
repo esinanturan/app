@@ -92,7 +92,7 @@ module.exports = ({ vendor, production=false }, l) => {
 			...(vendor == 'safari-ios' ? ['tabs'] : []),
 
 			//fix safari profiles cookies
-			...(vendor == 'safari' ? ['nativeMessaging', 'cookies', 'declarativeNetRequestWithHostAccess'] : [])
+			...(vendor.startsWith('safari') ? ['nativeMessaging', 'cookies', 'declarativeNetRequestWithHostAccess'] : [])
 		],
 		
 		optional_permissions: [
