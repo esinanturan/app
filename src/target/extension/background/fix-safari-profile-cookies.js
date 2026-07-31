@@ -1,8 +1,20 @@
 import browser from 'webextension-polyfill'
-import { getSafariProfileId } from './safari-profile'
+import { environment } from '~target'
 import { API_ENDPOINT_URL } from '~data/constants/app'
 
 const RULE_ID = 100
+
+async function getSafariProfileId() {
+    if (!environment.includes('safari') || environment.includes('safari-ios'))
+        return null
+
+    try {
+        const { profile_id } = await browser.runtime.sendNativeMessage('application.id', { type: 'profile_id' })
+        return profile_id || null
+    } catch(e) {
+        return null
+    }
+}
 
 async function sync() {
     //shared legacy store, never lists tabs

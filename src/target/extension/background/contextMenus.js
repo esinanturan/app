@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill'
 import config from '~config'
-import { open } from './popup'
+import { open } from './action'
 import { addCurrentTabSelection } from './highlights'
 import { environment } from '../environment'
 
@@ -31,7 +31,7 @@ async function onClicked({ menuItemId, pageUrl, srcUrl, linkUrl }, { windowId })
             })
 
         case 'settings':
-            return open('/settings', { width: 800, height: 700 })
+            return open('/settings')
 
         case 'execute_side_panel':
             if (browser.sidePanel)
@@ -53,13 +53,11 @@ async function init() {
 
     //create
     await Promise.all([
-        ...(!environment.includes('safari') ? [
-            browser.contextMenus.create({
-                id: 'save_page',
-                title: browser.i18n.getMessage('savePage')+suffix,
-                contexts: ['page']
-            })
-        ] : []),
+        browser.contextMenus.create({
+            id: 'save_page',
+            title: browser.i18n.getMessage('savePage')+suffix,
+            contexts: ['page']
+        }),
         
         browser.contextMenus.create({
             id: 'save_link',
@@ -96,19 +94,17 @@ async function init() {
             contexts: ['action']
         }),
 
-        ...(!environment.includes('safari') ? [
-            browser.contextMenus.create({
-                id: 'save_tabs',
-                title: browser.i18n.getMessage('saveTabs'),
-                contexts: ['action']
-            }),
+        browser.contextMenus.create({
+            id: 'save_tabs',
+            title: browser.i18n.getMessage('saveTabs'),
+            contexts: ['action']
+        }),
 
-            browser.contextMenus.create({
-                id: 'settings',
-                title: browser.i18n.getMessage('settings'),
-                contexts: ['action']
-            })
-        ] : [])
+        browser.contextMenus.create({
+            id: 'settings',
+            title: browser.i18n.getMessage('settings'),
+            contexts: ['action']
+        })
     ])
 }
 

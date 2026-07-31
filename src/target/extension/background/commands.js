@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill'
 import config from '~config'
 import { currentTab } from '~target'
-import { open } from './popup'
+import { open } from './action'
 import { addCurrentTabSelection } from './highlights'
 import Api from '~data/modules/api'
 
@@ -32,7 +32,7 @@ async function onCommand(command, tab) {
             catch(e) { console.error(e) }
 
             if (openAction)
-                return browser.action.openPopup()
+                return open()
 
             return open(`/add?link=${encodeURIComponent(url)}`)
         }
