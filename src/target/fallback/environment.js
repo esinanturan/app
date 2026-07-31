@@ -18,7 +18,8 @@ if (typeof navigator != 'undefined'){
         navigator.appVersion.indexOf('Linux')!=-1) browser.push('linux')
 
     //Device
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
+    //no iPad here because it should be traited as dekstop class
+    if (/iPhone|iPod|Android/i.test(navigator.userAgent))
         browser.push('mobile')
 }
 
