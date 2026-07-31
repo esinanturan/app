@@ -104,9 +104,6 @@ module.exports = ({ vendor, production=false }, l) => {
 
 			//fix firefox cookie protection
 			...(vendor == 'firefox' ? ['*://api.raindrop.io/*'] : []),
-
-			//fix safari profiles cookies
-			...(vendor == 'safari' ? ['*://raindrop.io/*', '*://api.raindrop.io/*'] : []),
 		],
 
 		optional_host_permissions: [
