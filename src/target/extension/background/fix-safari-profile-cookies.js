@@ -62,18 +62,26 @@ async function updateRules() {
         ...await browser.cookies.getAll({ url: API_ENDPOINT_URL, storeId })
     ]
 
+    //uuid rotates on reinstall; non-special scheme keeps hostname case, DNR needs lowercase
+    const uuid = new URL(browser.runtime.getURL('')).hostname.toLowerCase()
+    const header = [...new Set(
+        cookies.map(({ name, value }) => `${name}=${value}`)
+    )].join('; ')
+
+    //every DNR store touch opens sqlite fds Safari 27 never closes back, exhausting
+    //the process fd limit → browser crash; write only when the mirror truly changed
+    const state = `${uuid};${header}`
+    if ((await browser.storage?.session?.get('cookieMirror'))?.cookieMirror == state) return
+
     await browser.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: [RULE_ID],
 
-        ...(cookies.length ? {
+        ...(header ? {
             addRules: [{
                 id: RULE_ID,
                 priority: 1,
                 condition: {
-                    initiatorDomains: [
-                        //uuid rotates on reinstall; non-special scheme keeps hostname case, DNR needs lowercase
-                        new URL(browser.runtime.getURL('')).hostname.toLowerCase()
-                    ],
+                    initiatorDomains: [uuid],
                     urlFilter: '|' + API_ENDPOINT_URL
                 },
                 action: {
@@ -81,14 +89,14 @@ async function updateRules() {
                     requestHeaders: [{
                         header: 'Cookie',
                         operation: 'set',
-                        value: [...new Set(
-                            cookies.map(({ name, value }) => `${name}=${value}`)
-                        )].join('; ')
+                        value: header
                     }]
                 }
             }]
         } : {})
     })
+
+    await browser.storage?.session?.set({ cookieMirror: state })
 }
 
 async function ask() {
@@ -109,6 +117,10 @@ function ping() {
     updateRules().catch(console.error)
 }
 
+function onCookieChanged({ cookie }) {
+    if (cookie?.domain?.includes(APEX)) ping()
+}
+
 //fix cookies in non default Safari profiles (they are broken)
 export default async function() {
     if (!browser.cookies || !browser.declarativeNetRequest) return
@@ -122,8 +134,9 @@ export default async function() {
         event?.addListener(refresh)
     }
 
-    for (const event of [browser.cookies?.onChanged, browser.runtime.onMessage]) {
-        event?.removeListener(ping)
-        event?.addListener(ping)
-    }
+    browser.cookies?.onChanged?.removeListener(onCookieChanged)
+    browser.cookies?.onChanged?.addListener(onCookieChanged)
+
+    browser.runtime.onMessage.removeListener(ping)
+    browser.runtime.onMessage.addListener(ping)
 }
